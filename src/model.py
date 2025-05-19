@@ -9,15 +9,14 @@ import nltk
 
 nltk.download('punkt_tab')
 
-LANGUAGE = "russian" # Язык для TextRank и токенизатора
-DEFAULT_TEXTRANK_SENTENCES = 3 # Количество предложений для экстрактивного реферата (можно настроить)
-ABSTRACTIVE_MODEL_NAME = "IlyaGusev/rut5_base_sum_gazeta" # Русская абстрактивная модель для суммаризации
-DEFAULT_ABSTRACTIVE_MAX_LENGTH = 150 # Максимальное количество токенов для абстрактивного реферата (можно настроить)
+LANGUAGE = "russian"
+DEFAULT_TEXTRANK_SENTENCES = 3
+ABSTRACTIVE_MODEL_NAME = "IlyaGusev/rut5_base_sum_gazeta"
+DEFAULT_ABSTRACTIVE_MAX_LENGTH = 150
 
 try:
     abstractive_tokenizer = AutoTokenizer.from_pretrained(ABSTRACTIVE_MODEL_NAME)
     abstractive_model = AutoModelForSeq2SeqLM.from_pretrained(ABSTRACTIVE_MODEL_NAME)
-    # Определяем устройство (GPU или CPU)
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     abstractive_model.to(DEVICE)
     print(f"Абстрактивная модель {ABSTRACTIVE_MODEL_NAME} загружена на {DEVICE}")
@@ -25,7 +24,7 @@ except Exception as e:
     print(f"Ошибка при загрузке абстрактивной модели {ABSTRACTIVE_MODEL_NAME}: {e}")
     abstractive_tokenizer = None
     abstractive_model = None
-    DEVICE = "cpu" # На всякий случай
+    DEVICE = "cpu"
 
 def summarize_extractive(text, sentences_count=DEFAULT_TEXTRANK_SENTENCES):
 
@@ -69,37 +68,30 @@ def summarize_extractive(text, sentences_count=DEFAULT_TEXTRANK_SENTENCES):
         return "Произошла ошибка при экстрактивном суммировании текста."
 
 def summarize_abstractive(text, max_length=DEFAULT_ABSTRACTIVE_MAX_LENGTH):
-    """
-    Выполняет абстрактивное суммирование текста с использованием Transformers модели.
-    """
     if not abstractive_model or not abstractive_tokenizer:
         return "Абстрактивная модель не загружена или произошла ошибка."
     if not text or not text.strip():
         return "Не удалось извлечь текст для абстрактивного суммирования."
 
     try:
-        # Подготовка текста для модели
-        # Модели могут иметь ограничения на входную длину. Truncation=True обрезает текст.
         inputs = abstractive_tokenizer(
             text,
-            max_length=512, # Большинство моделей ограничены 512 токенами, но это зависит от модели
+            max_length=512,
             truncation=True,
-            padding="longest", # Или "max_length" если хотите фиксированный размер
+            padding="longest",
             return_tensors="pt"
         ).to(DEVICE)
 
-        # Генерация реферата
-        # num_beams > 1 часто улучшает качество за счет поиска по нескольким гипотезам
-        # early_stopping=True останавливает генерацию, как только все лучи нашли конец предложения
         summary_ids = abstractive_model.generate(
             inputs["input_ids"],
             max_length=max_length,
-            min_length=10, # Минимальная длина реферата
-            num_beams=4, # Количество лучей для поиска
-            early_stopping=True
+            min_length=10,
+            num_beams=4,
+            early_stopping=True,
+            no_repeat_ngram_size=3,
+            repetition_penalty=1.2
         )
 
-        # Декодирование сгенерированных токенов обратно в текст
         summary = abstractive_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
 
         return summary
@@ -107,9 +99,7 @@ def summarize_abstractive(text, max_length=DEFAULT_ABSTRACTIVE_MAX_LENGTH):
     except Exception as e:
         print(f"Ошибка при выполнении абстрактивного суммирования: {e}")
         print(f"Текст, вызвавший ошибку абстрактивного суммирования:\n{text[:500]}...")
-        # Также выводим информацию об устройстве, если есть ошибка
         print(f"Устройство: {DEVICE}")
-        # Выводим информацию о входных токенах, если есть
         try:
             print(f"Длина входных токенов: {inputs['input_ids'].shape[1]}")
         except:
@@ -118,32 +108,15 @@ def summarize_abstractive(text, max_length=DEFAULT_ABSTRACTIVE_MAX_LENGTH):
 
 
 def main(text):
-    """
-    Выполняет гибридное суммирование текста (экстрактивное + абстрактивное).
-    """
     if not text or not text.strip():
         return "Не удалось извлечь текст для суммирования."
 
-    # Выполняем экстрактивное суммирование
     extractive_summary = summarize_extractive(text, DEFAULT_TEXTRANK_SENTENCES)
 
-    # Выполняем абстрактивное суммирование
     abstractive_summary = summarize_abstractive(text, DEFAULT_ABSTRACTIVE_MAX_LENGTH)
-
-    # Комбинируем результаты
-    # Простая комбинация: сначала экстрактивный, потом абстрактивный, с разделителями
     combined_summary = (
-        f"--- Экстрактивный реферат (TextRank) ---\n"
-        f"{extractive_summary}\n\n"
-        f"--- Абстрактивный реферат (RuT5) ---\n"
-        f"{abstractive_summary}"
+        f"{abstractive_summary}\n\n"
+        f"{extractive_summary}"
     )
     print(f'{combined_summary}')
     return combined_summary
-
-# Закомментированный код для Pegasus
-# from transformers import PegasusForConditionalGeneration, PegasusTokenizer
-# import torch
-# def main_pegasus(text):
-#     # ... (код Pegasus)
-#     pass

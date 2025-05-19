@@ -1,3 +1,5 @@
+<!-- START OF FILE index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,8 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <link rel="icon" type="image/x-icon" href="/static/favicon.png" />
-    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.png') }}" /> {# Используем url_for #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" /> {# Используем url_for #}
     <link
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
       rel="stylesheet"
@@ -17,16 +19,16 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-6 mx-auto mt-5 text-center">
-          <h1 class="mb-5">UPLOAD TO GET A SUMMARY</h1>
+        <div class="col-md-8 mx-auto mt-5 text-center"> {# Использован col-md-8 и text-center #}
+          <h1 class="mb-5">UPLOAD IMAGE TO GET A SUMMARY</h1> {# Более понятный заголовок #}
           <form method="post" enctype="multipart/form-data">
               {{form.hidden_tag()}}
 
               {% for error in form.photo.errors %}
-                  <span style="color: red;">{{ error }}</span>
+                  <div class="alert alert-danger">{{ error }}</div> {# Использован Bootstrap alert для ошибок #}
               {% endfor %}
 
-              <div class="row justify-content-center">
+              <div class="row justify-content-center g-3"> {# Использован g-3 для отступов между элементами #}
                 <div class="col-auto">
                   {{ form.photo(class="form-control")}}
                 </div>
@@ -34,22 +36,20 @@
                   {{ form.submit(class="btn btn-success")}}
                 </div>
               </div>
+          </form>
 
-          {% if file_url %}
-            <div class="mt-5">
-              <img src="{{ file_url }}" style="width: 400px;">
-            </div>
-            <div class="mt-5">
-              <p>{{result}}</p>
-            </div>
-          {% endif %}
+          {# УДАЛЕН блок отображения изображения и результата #}
+          {# {% if file_url %} ... {% endif %} #}
+
         </div>
       </div>
     </div>
-    
-    
-    <div class="footer">
 
-    </div>
+    {# УДАЛЕН footer div, так как он был fixed и может мешать #}
+    {# <div class="footer"> ... </div> #}
+
+    {# Добавьте скрипты Bootstrap, если они нужны #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJlyd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
   </body>
 </html>
+<!-- END OF FILE index.html -->

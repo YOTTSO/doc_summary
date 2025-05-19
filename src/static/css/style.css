@@ -1,3 +1,5 @@
+/* START OF FILE style.css */
+
   * {
     margin: 0;
     padding: 0;
@@ -7,12 +9,16 @@
 
   body {
     line-height: 1.6;
-    overscroll-behavior-y: none;
-    padding: 2.5rem;
-    display: flex;
-    overflow: hidden;
+    /* overscroll-behavior-y: none; */ /* Удалено */
+    /* overflow: hidden; */ /* Удалено - может скрывать контент */
+    padding: 1.5rem; /* Уменьшен padding, можно настроить */
+    /* display: flex; */ /* Удалено - позволим Bootstrap управлять макетом */
+    min-height: 100vh; /* Гарантируем, что body занимает всю высоту, если контента мало */
+    flex-direction: column; /* Если display: flex; используется, то так */
   }
 
+  /* Удален стиль для .footer, так как он больше не нужен в этом макете */
+  /*
   .footer {
     color: #ffffff;
     position: fixed;
@@ -21,9 +27,22 @@
     transform: translate(-50%, -50%);
     margin: 0 auto;
   }
-  
+  */
+
+  /* Удален стиль для .resize, так как он не используется в предоставленных HTML */
+  /*
   .resize {
     width: 35px;
     height: auto;
     padding: 2.5px;
   }
+  */
+
+  /* Стиль для тега <pre> в result.html для сохранения форматирования и переносов */
+  .summary-text {
+      white-space: pre-wrap; /* Сохраняет переносы строк и пробелы, переносит длинные строки */
+      word-break: break-word; /* Принудительный перенос слов, если они слишком длинные */
+  }
+
+
+/* END OF FILE style.css */

@@ -1,0 +1,57 @@
+<!-- START OF FILE templates/result.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.png') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>SnapText Summarizer - Result</title> {# Изменен заголовок #}
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 mx-auto mt-5"> {# Использован col-md-8 для лучшего размещения контента #}
+          <h1 class="mb-4 text-center">Summarization Result</h1>
+
+          <h2 class="mt-4 mb-3">Uploaded Image:</h2>
+          {% if image_url %}
+            <div class="text-center mb-4">
+               {# Добавлен класс img-fluid для адаптивности изображения #}
+              <img src="{{ image_url }}" class="img-fluid" alt="Uploaded Image" style="max-width: 500px;">
+            </div>
+          {% else %}
+            <p class="alert alert-warning">Изображение не найдено.</p> {# Bootstrap класс для предупреждения #}
+          {% endif %}
+
+          <h2 class="mt-4 mb-3">Summary:</h2>
+          {% if result %}
+            {# Используем тег <pre> или div со стилем white-space: pre-wrap; для сохранения переносов строк из результата #}
+            {# <pre> сохраняет пробелы и переносы, как они есть в тексте результата #}
+            <pre class="summary-text p-3 border bg-light">{{ result }}</pre> {# Добавлены Bootstrap классы для оформления #}
+            {# Альтернатива с div: <div style="white-space: pre-wrap; word-break: break-word;" class="p-3 border bg-light">{{ result }}</div> #}
+          {% else %}
+            <p class="alert alert-warning">Результат суммирования не получен.</p>
+          {% endif %}
+
+          {# Добавляем кнопку или ссылку для возврата на страницу загрузки #}
+          <div class="text-center mt-5 mb-5">
+              <a href="{{ url_for('upload_image') }}" class="btn btn-primary">Upload Another Image</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    {# Добавьте скрипты Bootstrap, если они нужны для интерактивных компонентов #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJlyd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  </body>
+</html>
+<!-- END OF FILE templates/result.html -->
