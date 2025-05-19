@@ -12,7 +12,7 @@ nltk.download('punkt_tab')
 LANGUAGE = "russian"
 DEFAULT_TEXTRANK_SENTENCES = 3
 ABSTRACTIVE_MODEL_NAME = "IlyaGusev/rut5_base_sum_gazeta"
-DEFAULT_ABSTRACTIVE_MAX_LENGTH = 150
+DEFAULT_ABSTRACTIVE_MAX_LENGTH = 200
 
 try:
     abstractive_tokenizer = AutoTokenizer.from_pretrained(ABSTRACTIVE_MODEL_NAME)
